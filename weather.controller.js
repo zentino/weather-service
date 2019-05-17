@@ -1,8 +1,13 @@
 'use strict';
+const fs = require('fs');
+const rawdata = fs.readFileSync('city.list.json');
+const cityList = JSON.parse(rawdata);
+
 class WeatherController {
 
   getCityById(id) {
-    console.info(`getCityById ${id}`);
+    let city = cityList.filter(it => it.id == id);
+    return city[0];
   }
 
   getCityWeatherById(id) {

@@ -18,22 +18,33 @@ server.pre((req, res, next) => {
 });
 
 server.get('/cities/:city_id', (req, res, next) => {
-  controller.getCityById(req.params.city_id)
-  res.send(200)
-  return next();
+  let city = controller.getCityById(req.params.city_id);
+    if(city) {
+      city["lat"] = city.coord.lat;
+      city["lng"] = city.coord.lon;
+      delete city["coord"];
+      delete city["country"];
+      res.json(200, city);
+    } else {
+      res.json(404, {
+        code:"NotFoundError",
+        message:"not found"
+      });
+    }
+    return next();
 });
 
 server.get('/cities/:city_id/weather', (req, res, next) => {
-  controller.getCityWeatherById(req.params.city_id)
-  res.send(200)
+  controller.getCityWeatherById(req.params.city_id);
+  res.send(200);
   return next();
 });
 
 server.get('/cities', (req, res, next) => {
   const lat = req.query.lat;
   const lng = req.query.lng;
-  controller.getAvailableCities(lat, lng)
-  res.send(200)
+  controller.getAvailableCities(lat, lng);
+  res.send(200);
   return next();
 });
 

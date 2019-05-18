@@ -23,18 +23,10 @@ server.pre((req, res, next) => {
 
 server.get('/cities/:city_id', (req, res, next) => {
   let city = controller.getCityById(req.params.city_id);
-  if(city) {
-    city["lat"] = city.coord.lat;
-    city["lng"] = city.coord.lon;
-    delete city["coord"];
-    delete city["country"];
-    res.json(200, city);
-  } else {
-    res.json(404, {
-      code:"NotFoundError",
-      message:"not found"
-    });
+  if(!city) {
+    return next(new errors.NotFoundError("not found"));
   }
+  res.json(200, city);
   return next();
 });
 
@@ -44,7 +36,7 @@ server.get('/cities/:city_id/weather', (req, res, next) => {
       const weather = JSON.parse(body);
       res.json(200, weather);
     } else {
-      res.json(404, {code: "NotFoundError", nessage: "city not found"});
+      return next(new errors.NotFoundError("city not found"));
     }
   });
   return next();
@@ -53,12 +45,11 @@ server.get('/cities/:city_id/weather', (req, res, next) => {
 server.get('/cities', (req, res, next) => {
   const lat = req.query.lat;
   const lng = req.query.lng;
-  if(lat && lng) {
-    const cities = controller.getAvailableCities(lat, lng);
-    res.json(200, cities);
-  } else {
-    res.json(400, {code:"BadRequestError", message:"lat/lng required"});
+  if(!(lat && lng)) {
+    return next(new errors.BadRequestError("lat/lng required"));
   }
+  const cities = controller.getAvailableCities(lat, lng);
+  res.json(200, cities);
   return next();
 });
 

@@ -4,6 +4,10 @@ const errors = require('restify-errors');
 const port = process.env.PORT || 8080;
 const controller = require('./weather.controller');
 
+const request = require('request');
+const appid = 'a56b0d9f78bcc1caae5cfcf223946d0a';
+const url = 'http://api.openweathermap.org/data/2.5/weather?';
+
 const server = restify.createServer({
   name: 'restify headstart'
 });
@@ -35,8 +39,14 @@ server.get('/cities/:city_id', (req, res, next) => {
 });
 
 server.get('/cities/:city_id/weather', (req, res, next) => {
-  controller.getCityWeatherById(req.params.city_id);
-  res.send(200);
+  request.get(url + `id=${req.params.city_id}&appid=${appid}`, (error, response, body)=>{
+    if(response.statusCode == 200) {
+      const weather = JSON.parse(body);
+      res.json(200, weather);
+    } else {
+      res.json(404, {code: "NotFoundError", nessage: "city not found"});
+    }
+  });
   return next();
 });
 
@@ -47,10 +57,7 @@ server.get('/cities', (req, res, next) => {
     const cities = controller.getAvailableCities(lat, lng);
     res.json(200, cities);
   } else {
-    res.json(400, {
-      code:"BadRequestError",
-      message:"lat/lng required"
-    });
+    res.json(400, {code:"BadRequestError", message:"lat/lng required"});
   }
   return next();
 });

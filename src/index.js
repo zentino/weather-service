@@ -2,7 +2,7 @@
 const restify = require('restify');
 const errors = require('restify-errors');
 const port = process.env.PORT || 8080;
-const controller = require('./weather.controller');
+const controller = require('./city.controller');
 
 const request = require('request');
 const appid = 'a56b0d9f78bcc1caae5cfcf223946d0a';

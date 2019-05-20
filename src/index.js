@@ -48,7 +48,7 @@ server.get('/cities', (req, res, next) => {
   if(!(lat && lng)) {
     return next(new errors.BadRequestError("lat/lng required"));
   }
-  const cities = controller.getAvailableCities(lat, lng);
+  const cities = controller.getAvailableCities(parseFloat(lat),parseFloat(lng));
   res.json(200, cities);
   return next();
 });

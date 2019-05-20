@@ -2,21 +2,29 @@
 const fs = require('fs');
 const rawdata = fs.readFileSync('./city.list.json');
 const cityList = JSON.parse(rawdata);
-const RADIUS = 10;
+const haversine = require('haversine')
+const RADIUS = 10; // km
 
-class WeatherController {
+class CityController {
 
   getCityById(id) {
     let city = cityList.filter(it => it.id == id);
     return city[0];
   }
 
-  getAvailableCities(latitude, longitude) {
-    let lat1 = parseFloat(latitude);
-    let lon1 = parseFloat(longitude);
+  /**
+  * Returns a list of available cities around a specified
+  * latitude/longitude (start) within a given radius.
+  *
+  * @return list of available cities
+  */
+  getAvailableCities(lat, lon) {
     let cities = [];
+    let start = {latitude: lat, longitude: lon};
+    let end = {};
     cityList.filter(it => {
-        if(this.calculateDistance(parseFloat(latitude), parseFloat(longitude), it.coord.lat, it.coord.lon) <= RADIUS) {
+        end = {latitude: it.coord.lat, longitude: it.coord.lon};
+        if(haversine(start, end) <= RADIUS) {
           cities.push({id:it.id, name:it.name});
         }
       }
@@ -24,24 +32,6 @@ class WeatherController {
     return cities;
   }
 
-  // Haversine formula to calculate the distance between two points
-  calculateDistance(lat1, lon1, lat2, lon2) {
-    let R = 6371 // kilometres
-    let pi = Math.PI;
-    let φ1 = lat1 * (pi/180);
-    let φ2 = lat2 * (pi/180);
-    let Δφ = (lat2-lat1) * (pi/180);
-    let Δλ = (lon2-lon1) * (pi/180);
-
-    let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-    let d = R * c;
-    return d;
-  }
-
 }
 
-module.exports = new WeatherController();
+module.exports = new CityController();

@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-	"start": "node src/index.js"
-	
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +19,7 @@
   },
   "homepage": "https://github.com/zentino/weather-service#readme",
   "dependencies": {
+    "haversine": "^1.1.1",
     "request": "^2.88.0",
     "restify": "^8.3.2",
     "restify-errors": "^8.0.0"

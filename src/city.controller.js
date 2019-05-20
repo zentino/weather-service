@@ -7,6 +7,11 @@ const RADIUS = 10; // km
 
 class CityController {
 
+  /**
+  * Returns city details with the given city id
+  *
+  * @return JSON object with city details
+  */
   getCityById(id) {
     let city = cityList.filter(it => it.id == id);
     return city[0];
